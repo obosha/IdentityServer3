@@ -57,17 +57,6 @@ namespace SelfHost
 
 		private void ConfigureIdentityProviders(IAppBuilder app, string signInAsType)
 		{
-			//app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions
-			//    {
-			//        AuthenticationType = "Google",
-			//        Caption = "Sign-in with Google",
-			//        SignInAsAuthenticationType = signInAsType,
-
-			//        ClientId = "701386055558-9epl93fgsjfmdn14frqvaq2r9i44qgaa.apps.googleusercontent.com",
-			//        ClientSecret = "3pyawKDWaXwsPuRDL7LtKm_o"
-			//    });
-
-
 			FacebookAuthOptions = new FacebookAuthenticationOptions()
 			{
 				AppId = "952496471482222",
