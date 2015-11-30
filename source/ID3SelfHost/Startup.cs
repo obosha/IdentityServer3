@@ -1,17 +1,16 @@
 ﻿using Owin;
 using SelfHost.Config;
 using System.Collections.Generic;
-using System.IdentityModel.Claims;
 using System.IdentityModel.Tokens;
-using IdentityServer3.Core;
 using IdentityServer3.Core.Configuration;
-using IdentityServer3.Core.Services.InMemory;
+using IdentityServer3.Core.Services;
 using IdentityServer3.Host.Config;
 using IdentityServer3.WsFederation.Configuration;
 using IdentityServer3.WsFederation.Models;
 using IdentityServer3.WsFederation.Services;
 using Microsoft.Owin.Security.Facebook;
 using SelfHost.Provider;
+using SelfHost.Services;
 using Serilog;
 
 namespace SelfHost
@@ -23,27 +22,28 @@ namespace SelfHost
 		public void Configuration(IAppBuilder appBuilder)
         {
 			//AntiForgeryConfig.UniqueClaimTypeIdentifier = Constants.ClaimTypes.Subject;
-			JwtSecurityTokenHandler.InboundClaimTypeMap = new Dictionary<string, string>();
+			//JwtSecurityTokenHandler.InboundClaimTypeMap = new Dictionary<string, string>();
 
 			Log.Logger = new LoggerConfiguration()
-               .MinimumLevel.Debug()
-               .WriteTo.LiterateConsole(outputTemplate: "{Timestamp} [{Level}] ({Name}){NewLine} {Message}{NewLine}{Exception}")
-               .CreateLogger();
-            
-            var factory = new IdentityServerServiceFactory()
-                            .UseInMemoryUsers(Users.Get())
+			   .MinimumLevel.Debug()
+			   .WriteTo.LiterateConsole(outputTemplate: "{Timestamp} [{Level}] ({Name}){NewLine} {Message}{NewLine}{Exception}")
+			   .CreateLogger();
+
+			var factory = new IdentityServerServiceFactory()
                             .UseInMemoryClients(Clients.Get())
                             .UseInMemoryScopes(Scopes.Get());
 
+			// Register our custom user service
+			factory.UserService = new Registration<IUserService>(new CustomInMemoryUserService(Users.Get()));
+			
             var options = new IdentityServerOptions
             {
-                SiteName = "IdentityServer3 - WsFed",
-				IssuerUri = "http://idsrv-local",
+                SiteName = "Kroll Secure Token Service",
+				IssuerUri = "https://kroll-sts-local",
 				
                 SigningCertificate = Certificate.Get(),
                 Factory = factory,
                 PluginConfiguration = ConfigurePlugins,
-
 				AuthenticationOptions = new IdentityServer3.Core.Configuration.AuthenticationOptions
 				{
 					EnablePostSignOutAutoRedirect = true,
