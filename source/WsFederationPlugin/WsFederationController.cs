@@ -159,10 +159,9 @@ namespace IdentityServer3.WsFederation
         {
             Uri publicRequestUri = GetPublicRequestUri();
 
-            var message = new SignInMessage();
-            message.ReturnUrl = publicRequestUri.AbsoluteUri;
+	        var message = new SignInMessage {ReturnUrl = publicRequestUri.AbsoluteUri};
 
-            if (!String.IsNullOrWhiteSpace(result.HomeRealm))
+	        if (!String.IsNullOrWhiteSpace(result.HomeRealm))
             {
                 message.IdP = result.HomeRealm;
             }
